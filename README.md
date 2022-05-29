@@ -1,4 +1,15 @@
-# Terraform-HandsOn
+# Terraform　初級者のためのハンズオン
+このテキストは、AWSは知っているけどTerraform触ったことがないという人のための初級ハンズオンです。
+
+* 説明すること
+    * Terrafromの概要
+    * Terraformをとりあえず動かしてみる(`main.tf`でIAMロールとEC2インスタンスを作成)
+    * tfファイルを分割してみる
+* 説明しないこと
+    * AWS全般の話(AWSのIAM/EC2/VPCは理解している前提)
+    * S3/DynamoDBを利用したリモート管理
+    * Terraformの高度な利用(モジュール化/既存リソースのインポート/別リポジトリの参照など)
+    * `count`、loop処理などTerraformの各種テクニック
 
 # Terraform概要
 ## Terraformとは
@@ -6,9 +17,9 @@
 > HashiCorp Terraform is an infrastructure as code tool that lets you define both cloud and on-prem resources in human-readable configuration files that you can version, reuse, and share.
 
 ### Provider
-Terrafomは、Terrafom本体と、Terrafomでデプロイするターゲットを操作するための`プロバイダー(PROVIDER)`で構成されます。
-TerrafomでAWSソースを管理する場合は、AWSのプロバイダーをアドオンすることでAWSを管理することができます。
-Provederは、Terraformのコードの中で宣言して、そのコードを`terrafom init`コマンドで初期化するときにネットから自動的にダウンロードされます。
+Terrafomは、Terrafom本体と、Terrafomでデプロイするターゲットを操作するための`プロバイダー(PROVIDER)`で構成される。
+TerrafomでAWSソースを管理する場合は、AWSのプロバイダーをアドオンすることでAWSを管理することができる。
+Provederは、Terraformのコードの中で宣言して、そのコードを`terrafom init`コマンドで初期化するときにネットから自動的にダウンロードされる。
 ![Terraform architecture](https://mktg-content-api-hashicorp.vercel.app/api/assets?product=terraform&version=refs%2Fheads%2Fstable-website&asset=website%2Fimg%2Fdocs%2Fintro-terraform-apis.png&width=2048&height=644)
 
 ## Terraformの種類
@@ -32,7 +43,7 @@ Terrafom Cloud、Terraform Enterpriseはバージョン管理&コラボ機能も
 (*1) 業務でTerrafomを利用する場合は、メタデータ(tfstate)のS3管理と、DybnamoDBbによる排他ロックを実装するのが鉄則
 
 ## Terraformコードの概要
-[こちらを参照](https://speakerdeck.com/yuukiyo/terraform-aws-best-practices?slide=8)
+[「それ、どこに出しても恥ずかしくないTerraformコードになってるか？」 / Terraform AWS Best PracticeのP.8-P.12参照](https://speakerdeck.com/yuukiyo/terraform-aws-best-practices?slide=8)
 
 ## ドキュメント
 Terraformの情報はGoogleで検索するとブログやQiitaで多量に出ますが、2021/6にTerraformがGA(Terraform 1.0リリース)以前は仕様が頻繁に変わり互換性もない場合もあるため、最新バージョンで正しく動かないケースや現在は推奨しない設定方法を紹介している例が多々ある。
@@ -47,18 +58,18 @@ Terraformの情報はGoogleで検索するとブログやQiitaで多量に出ま
     
 [^1]: 前半部分がTerrafomを初めて使う人にわかりやすい。後半のモジュールは、一通りTerrafomが動かせるようになってから読むと良い。
 # ハンズオン
-## 事前準備
+## (ハンズオン)事前準備
 下記をあらかじめ準備しておくこと。
 * Bashが使える環境(Linux on EC2、 Mac、Windows WSLなんでも可)
 * デプロイ先のAWSアカウント
 * 上記AWSアカウントをAdministratorAccess権限で操作可能なAWS CLIのプロファイル(TerraformがCLIを利用するわけではないですが、CLIのプロファイルを活用することができるため)
 * gitコマンドが利用できること
 
-## Terraformセットアップ
+## (ハンズオン)Terraformセットアップ
 こちらを参照
 * [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
-## コードのダウンロード
+## (ハンズオン)コードのダウンロード
 ```sh
 git clone https://github.com/Noppy/Terraform-HandsOn.git
 ```
@@ -111,6 +122,14 @@ terraform destroy
 ### TerraformによるIaC運用の全体の流れ
 Terraformコマンドを利用したIaCの全体の流れは以下の通り。
 ![terraformコマンド遷移](Documents/terraform_operations.svg)
+
+### Terraformの内部管理ファイル
+Terraformを実行すると以下のような管理ファイルが作成される。
+ここではTerraformの理解のためファイルを確認する
+- `terraform.tfstate` : Terraformが管理するリソースの構成情報が格納されているJSONファイル。業務でTerraformを利用する場合は`backend`で指定し、でS3などオブジェクトファイルストレージで管理することが望ましい。
+- `.terraformディレクトリ` : ダウンロードしたProviderのモジュールが保管されるディレクトリ
+- `.terraform.lock.hcl` : 依存関係のロックファイル。現時点ではProviderのバージョン依存関係のロックのみの模様。`terrafomrm init`の実行により生成される。
+
 
 ## Step2 インスタンスの作成
 ### IAMロールの作成
@@ -217,3 +236,71 @@ terraform apply -var-file=step2.tfvars -auto-approve
 ```
 
 ## Step3 構成ファイルを分割する
+Step1/2では、`main.tf`の１ファイルで構成していたが、種別毎(terraform、provider、localsや、IAM、EC2などリソースの管理単位)にファイルを分割して管理するのが一般的である。
+
+ここではファイル分割運用について説明する。
+
+### (解説)Terrafromのコードのファイルとディレクトリのルール
+正確な内容は、[公式ドキュメント](https://www.terraform.io/language/files)を参照。
+#### ファイルのルール
+* ファイル名: 拡張子が`.tf`であること。
+    * 拡張子が`.tf`であればファイル名はなんでも良い。
+    * ファイル名に優先順位はな(例えばA-Z順に読まれるとか、`main.tf`から読まれるというルールはない)
+    * 従ってデプロイの優先順位に、ファイル名は関係しない(コード内のオブジェクトの依存関係で決定される)。
+- 文字コード: `UTF-8`、改行コードはUNIXスタイル(`LF`)が望ましい(Windowsの`CRLF`でも可)
+#### ディレクトリのルール
+- terraform実行時のカレントディレクトリの`.tf`ファイルを全て読み込む
+- 逆の言い方をすると、カレントディレクトリのサブディレクトや、全く異なるディレクトリは参照されない(`module`を利用することで別ディレクトリに外出し可能)
+
+### 一般的なファイル構成のベストプラクティス
+Terraformとしての決まりはないが、一般的には以下のようにファイルを分割して管理するケースが多い。
+* 必須のファイル
+    * `terraform.tf` / `version.tf` : requiredバージョン指定
+    * `providers.tf` : AWSなどのプロバイダー設定
+    * `backend.tf` : tfstateファイルのか
+* 要件に応じて配置するファイル
+    * `locals.tf`
+    * `valiables.tf`
+    * `outputs.tf`
+* デプロイするリソースごとに作成するファイル
+    * `main.tf`
+    * `iam.tf`
+    * `vpc.tf`
+    * ... etc.
+
+## (ハンズオン)ファイルを分割する
+### ファイル分割
+`main.tf`ファイルを上記の例を見ながら分割してみる。
+
+Step3のサンプルをそのまま利用する場合は以下の手順でサンプルをコピーする
+```shell
+rm main.tf
+cp step3/*.tf .
+```
+### terraformを実行する
+`terraform plan`を実行し差分が出ないことを確認する。
+```shell
+terraform fmt
+terraform validate
+terraform plan -var-file=step2.tfvars
+```
+`terraform plan`まで実行が完了し、変更差分がないことを確認する。
+具体的には以下のメッセージが出ることを確認する。
+```
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
+```
+
+### この後やること
+一旦、ここまでがTerrafomの初級編。
+これに加えて、以下のことが押さえられると、とりあえずTerrafomが使えるレベル(中級者の入り口)になるのであとは自力で。検討を祈ります！！
+
+* backendで、S3とDynamoDBを利用する
+    * [「それ、どこに出しても恥ずかしくないTerraformコードになってるか？」 / Terraform AWS Best Practices P.12-P.16](https://speakerdeck.com/yuukiyo/terraform-aws-best-practices?slide=12)
+* モジュール化する
+    * [「それ、どこに出しても恥ずかしくないTerraformコードになってるか？」 / Terraform AWS Best Practices P.17以降参照](https://speakerdeck.com/yuukiyo/terraform-aws-best-practices?slide=17)
+* マルチアカウントでのTerraform利用
+    * providerで、aliasで複数Providerを作成し使い分け、かつ`assume_role`を利用し、別AWSアカウントのIAMロールの一次認証情報を利用しTerraformを実行する
+        * [General Argument: alias](https://www.terraform.io/language/providers/configuration?_ga=2.213297556.1666724791.1653808907-350641458.1652589089#alias-multiple-provider-configurations)
+        * [AWS Provider: Assuming an IAM Role](https://learn.hashicorp.com/tutorials/terraform/aws-assumerole)
