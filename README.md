@@ -49,3 +49,7 @@ Terraformの情報はGoogleで検索するとブログやQiitaで多量に出ま
 * 上記AWSアカウントをAdministratorAccess権限で操作可能なAWS CLIのプロファイル(TerraformがCLIを利用するわけではないですが、CLIのプロファイルを活用することができるため)
 
 ## Terraformセットアップ
+こちらを参照
+* [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+
+##
