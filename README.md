@@ -302,6 +302,12 @@ No changes. Your infrastructure matches the configuration.
 Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
 ```
 
+## 片付け
+デプロイしたリソースを削除します。
+```shell
+yes
+```
+
 ### この後やること
 一旦、ここまでがTerrafomの初級編。
 これに加えて、以下のことが押さえられると、とりあえずTerrafomが使えるレベル(中級者の入り口)になるのであとは自力で。検討を祈ります！！
