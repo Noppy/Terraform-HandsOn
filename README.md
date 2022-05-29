@@ -11,6 +11,11 @@
     * Terraformの高度な利用(モジュール化/既存リソースのインポート/別リポジトリの参照など)
     * `count`、loop処理などTerraformの各種テクニック
 
+## ハンズオンの流れ
+* Step1 サンプルコード(`main.tf`)を利用し、IAMロールを作る
+* Step2 サンプルコードにコードを追加しインスタンスを作成する
+* Step3 Step2のコード(`main.tf`)をTerraformの一般的なコード構成に倣い、ファイル分割する
+
 # Terraform概要
 ## Terraformとは
 [Introduction to Terraform](https://www.terraform.io/intro)
