@@ -34,7 +34,7 @@ Terrafom Cloud、Terraform Enterpriseはバージョン管理&コラボ機能も
 |  エディション| Terraform CLI    | Terraform Cloud | Terraform Enterprise |
 | :------: | :--------------: | :-------------: | :------------------: |
 |  提供形態 | Open Source(無償) | SaaS(５名まで無償) | Self Hosted(有償)    |
-|  CLI機能 | あり          | あり              | あり                  |
+|  IaC機能 | あり          | あり              | あり                  |
 | バージョン管理| -               | あり              | あり                 |
 |コラボ機能   | -               | あり              | あり                 |
 
