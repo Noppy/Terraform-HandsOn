@@ -43,7 +43,7 @@ Terrafom Cloud、Terraform Enterpriseはバージョン管理&コラボ機能も
     * GitHub/gitLab/CodeCommitなど既存で利用しているコード管理ツールを一般的に利用する。
 * Terrafom実行環境
     * PCにCLIをインストールして利用: 個人利用 / Terraform学習 / 検証の場合
-    * サーバー(EC2インスタンス)にCLIをインストールして利用(*1)：　CI環境がない場合はこの構成が多い。OSログインし、gitからコードをpullしてコマンド操作する運用。
+    * サーバー(EC2インスタンス)にCLIをインストールして利用(*1)：　CI環境がない場合はこの構成が多い。OSログインし、gitからコードをpullしてコマンド操作する運用(*1)。
     * CIに組み込む(*1)。 [GitHub ActionsにCLIを組み込む(簡単おすすめ)](https://github.com/hashicorp/setup-terraform)、CodeBuildでTerraformを組み込んだコンテナを利用しCLを実装するなど。
 (*1) 業務でTerrafomを利用する場合は、メタデータ(tfstate)のS3管理と、DybnamoDBbによる排他ロックを実装するのが鉄則
 
