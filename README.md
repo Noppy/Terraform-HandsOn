@@ -50,7 +50,7 @@ Terrafom Cloud、Terraform Enterpriseはバージョン管理&コラボ機能も
       * CodeBuildでTerraformを組み込んだコンテナを利用しCLを実装するなど。
 
 
-(*1) 業務でTerrafomを利用する場合は、メタデータ(tfstate)のS3管理と、DybnamoDBbによる排他ロックを実装するのが鉄則
+(*1) 業務でTerrafomを利用する場合は、メタデータ(tfstate)のS3管理と、DybnamoDBによる排他ロックを実装するのが鉄則
 
 ## Terraformコードの概要
 [「それ、どこに出しても恥ずかしくないTerraformコードになってるか？」 / Terraform AWS Best PracticeのP.8-P.12参照](https://speakerdeck.com/yuukiyo/terraform-aws-best-practices?slide=8)
