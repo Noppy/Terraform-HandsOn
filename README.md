@@ -100,7 +100,7 @@ provider "aws" {
 }
 ```
 
-### terraformのコードをターゲットに適応する
+### terraformのコードをターゲットに適用する
 ```shell
 terraform fmt      #コードの整形
 terraform init     #初期化(必要なProviderをダウンロードしたりする)
