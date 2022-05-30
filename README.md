@@ -303,9 +303,10 @@ Terraform has compared your real infrastructure against your configuration and f
 ```
 
 ## 片付け
-デプロイしたリソースを削除します。
+デプロイしたリソースを削除する。
+削除内容を確認し、問題なければ`yes`と入力し削除する。
 ```shell
-yes
+terraform destroy -var-file=step2.tfvars
 ```
 
 ### この後やること
